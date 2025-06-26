@@ -5,19 +5,24 @@ def read_file_to_dict(filename):
     :return: dict - diccionario con listas de montos por producto.
     :raises: FileNotFoundError - si el archivo no existe.
     """
-    result = {}
-    with open(filename) as f:
-        content = f.read().strip()
-        if content:
-            sales = content.split(';')
-            for sale in sales:
-                if sale:
-                    product, amount = sale.split(':')
-                    amount = float(amount)
-                    if product not in result:
-                        result[product] = []
-                    result[product].append(amount)
-    return result
+    ventas = {}
+    with open(filename, "r") as file:
+        contenido = file.read().strip()
+        if not contenido:
+            return ventas
+        items = contenido.split(";")
+        for item in items:
+            if not item:
+                continue
+            if ":" not in item:
+                continue
+            producto, valor = item.split(":", 1)
+            producto = producto.strip()
+            valor = float(valor.strip())
+            if producto not in ventas:
+                ventas[producto] = []
+            ventas[producto].append(valor)
+    return ventas
 
 
 def process_dict(data):
@@ -26,11 +31,10 @@ def process_dict(data):
     :param data: dict - diccionario a procesar.
     :return: None
     """
-            for producto, montos in data.items():
+    for producto, montos in data.items():
         total = sum(montos)
         if len(montos) > 0:
             promedio = total / len(montos)
         else:
             promedio = 0
         print(f"{producto}: ventas totales ${total:.2f}, promedio ${promedio:.2f}")
-    pass
